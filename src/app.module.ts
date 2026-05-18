@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ExercisesModule } from './exercises/exercises.module';
+import { MusclesModule } from './muscles/muscles.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { ExercisesModule } from './exercises/exercises.module';
       synchronize: true,
     }),
     ExercisesModule,
+    MusclesModule,
   ],
   controllers: [],
   providers: [],

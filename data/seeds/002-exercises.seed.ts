@@ -2,57 +2,71 @@ import { DataSource } from 'typeorm';
 import {
   Exercise,
   ExerciseTrackingType,
-  MusclesEnum,
 } from '../../src/exercises/exercise.entity';
+import { Muscle } from '../../src/muscles/muscle.entity';
 
 export async function seedExercises(dataSource: DataSource) {
-  const repo = dataSource.getRepository(Exercise);
+  const exerciseRepo = dataSource.getRepository(Exercise);
+  const muscleRepo = dataSource.getRepository(Muscle);
+
+  const muscles = await muscleRepo.find();
+  const muscleMap = new Map(muscles.map((m) => [m.name, m]));
 
   const exercises = [
     {
       name: 'Bench Press',
-      muscles: [MusclesEnum.CHEST, MusclesEnum.SHOULDER],
+      muscleNames: ['chest', 'shoulder'],
       type: ExerciseTrackingType.WEIGHT_REPS,
     },
     {
       name: 'Squat',
-      muscles: [MusclesEnum.LEGS],
+      muscleNames: ['legs'],
       type: ExerciseTrackingType.WEIGHT_REPS,
     },
     {
       name: 'Deadlift',
-      muscles: [MusclesEnum.BACK, MusclesEnum.LEGS],
+      muscleNames: ['back', 'legs'],
       type: ExerciseTrackingType.WEIGHT_REPS,
     },
     {
       name: 'Pull Up',
-      muscles: [MusclesEnum.BACK, MusclesEnum.SHOULDER],
+      muscleNames: ['back', 'shoulder'],
       type: ExerciseTrackingType.BODYWEIGHT_REPS,
     },
     {
       name: 'Push Up',
-      muscles: [MusclesEnum.CHEST, MusclesEnum.SHOULDER],
+      muscleNames: ['chest', 'shoulder'],
       type: ExerciseTrackingType.BODYWEIGHT_REPS,
     },
     {
       name: 'Plank',
-      muscles: [MusclesEnum.CORE],
+      muscleNames: ['core'],
       type: ExerciseTrackingType.TIME,
     },
     {
       name: 'Running',
-      muscles: [MusclesEnum.LEGS],
+      muscleNames: ['legs'],
       type: ExerciseTrackingType.DISTANCE,
     },
   ];
 
   for (const exercise of exercises) {
-    const exists = await repo.findOne({
+    const exists = await exerciseRepo.findOne({
       where: { name: exercise.name },
     });
 
     if (!exists) {
-      await repo.save(repo.create(exercise));
+      const muscles = exercise.muscleNames
+        .map((name) => muscleMap.get(name))
+        .filter(Boolean) as Muscle[];
+
+      await exerciseRepo.save(
+        exerciseRepo.create({
+          name: exercise.name,
+          muscles,
+          type: exercise.type,
+        }),
+      );
     }
   }
 

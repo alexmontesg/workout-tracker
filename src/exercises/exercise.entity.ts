@@ -1,13 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-
-// Temp, should be another table
-export enum MusclesEnum {
-  CHEST = 'chest',
-  BACK = 'back',
-  SHOULDER = 'shoulder',
-  LEGS = 'legs',
-  CORE = 'core',
-}
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Muscle } from '../muscles/muscle.entity';
 
 export enum ExerciseTrackingType {
   TIME = 'time',
@@ -25,8 +23,9 @@ export class Exercise {
   @Column()
   name!: string;
 
-  @Column({ type: 'simple-array' })
-  muscles!: MusclesEnum[];
+  @ManyToMany(() => Muscle)
+  @JoinTable()
+  muscles!: Muscle[];
 
   @Column()
   type!: ExerciseTrackingType;

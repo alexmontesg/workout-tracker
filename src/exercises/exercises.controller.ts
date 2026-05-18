@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ExercisesService } from './exercises.service';
 import { CreateExerciseDto } from './dto/create-exercise.dto';
-import { MusclesEnum } from './exercise.entity';
+import { SearchExerciseDto } from './dto/search-exercise.dto';
 
 @Controller('exercises')
 export class ExercisesController {
@@ -13,8 +13,8 @@ export class ExercisesController {
   }
 
   @Get('search')
-  async search(@Query('muscle') muscle: MusclesEnum) {
-    return await this.exercisesService.search({ muscle });
+  async search(@Query() query: SearchExerciseDto) {
+    return await this.exercisesService.search(query);
   }
 
   @Post()
