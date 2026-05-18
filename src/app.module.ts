@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { DatabaseModule } from './database/database.module';
 import { ExercisesModule } from './exercises/exercises.module';
 import { MusclesModule } from './muscles/muscles.module';
 
@@ -11,6 +12,7 @@ import { MusclesModule } from './muscles/muscles.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    DatabaseModule,
     ExercisesModule,
     MusclesModule,
   ],

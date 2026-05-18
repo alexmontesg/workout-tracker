@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ExercisesController } from './exercises.controller';
 import { ExercisesService } from './exercises.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Exercise } from './exercise.entity';
-import { Muscle } from '../muscles/muscle.entity';
+import { DatabaseModule } from '../database/database.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Exercise, Muscle])],
+  imports: [DatabaseModule],
   controllers: [ExercisesController],
   providers: [ExercisesService],
 })
