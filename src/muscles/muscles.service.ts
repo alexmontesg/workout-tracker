@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import type { IMuscleRepository } from './domain/muscle.repository.interface';
 import { MUSCLE_REPOSITORY } from './domain/muscle.repository.interface';
