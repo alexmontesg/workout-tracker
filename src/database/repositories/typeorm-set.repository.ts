@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { Set } from '../../sets/set.entity';
 import { ISetRepository } from '../../sets/domain/set.repository.interface';
 import { CreateSetDto } from '../../sets/dto/create-set.dto';
@@ -12,6 +12,10 @@ export class TypeOrmSetRepository implements ISetRepository {
     @InjectRepository(Set)
     private readonly repo: Repository<Set>,
   ) {}
+
+  private getRepo(entityManager?: EntityManager): Repository<Set> {
+    return entityManager ? entityManager.getRepository(Set) : this.repo;
+  }
 
   async findAll(): Promise<Set[]> {
     return await this.repo.find({
@@ -27,18 +31,24 @@ export class TypeOrmSetRepository implements ISetRepository {
     });
   }
 
-  async create(dto: CreateSetDto): Promise<Set> {
-    const set = this.repo.create({
+  async create(dto: CreateSetDto, entityManager?: EntityManager): Promise<Set> {
+    const repo = this.getRepo(entityManager);
+    const set = repo.create({
       exercise: { id: dto.exerciseId },
       timestamp: dto.timestamp,
       notes: dto.notes ?? null,
       restTimeSeconds: dto.restTimeSeconds ?? null,
       series: [],
     });
-    return await this.repo.save(set);
+    return await repo.save(set);
   }
 
-  async update(set: Set, dto: UpdateSetDto): Promise<Set> {
+  async update(
+    set: Set,
+    dto: UpdateSetDto,
+    entityManager?: EntityManager,
+  ): Promise<Set> {
+    const repo = this.getRepo(entityManager);
     const update: Record<string, unknown> = {};
     if (dto.exerciseId !== undefined) update.exercise = { id: dto.exerciseId };
     if (dto.timestamp !== undefined) update.timestamp = dto.timestamp;
@@ -47,10 +57,11 @@ export class TypeOrmSetRepository implements ISetRepository {
       update.restTimeSeconds = dto.restTimeSeconds;
 
     Object.assign(set, update);
-    return await this.repo.save(set);
+    return await repo.save(set);
   }
 
-  async remove(set: Set): Promise<Set> {
-    return await this.repo.remove(set);
+  async remove(set: Set, entityManager?: EntityManager): Promise<Set> {
+    const repo = this.getRepo(entityManager);
+    return await repo.remove(set);
   }
 }

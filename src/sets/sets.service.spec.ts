@@ -1,13 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { SetsService } from './sets.service';
-import {
-  SET_REPOSITORY,
-  ISetRepository,
-} from './domain/set.repository.interface';
-import { Set } from './set.entity';
+import { Test, TestingModule } from '@nestjs/testing';
 import { CreateSetDto } from './dto/create-set.dto';
 import { UpdateSetDto } from './dto/update-set.dto';
+import { ExerciseTrackingType } from '../exercises/exercise.entity';
+import {
+  ISetRepository,
+  SET_REPOSITORY,
+} from './domain/set.repository.interface';
+import { Set } from './set.entity';
+import { SetsService } from './sets.service';
 
 function createMockSetRepository(): jest.Mocked<ISetRepository> {
   return {
@@ -22,13 +23,18 @@ function createMockSetRepository(): jest.Mocked<ISetRepository> {
 function createSet(overrides?: Partial<Set>): Set {
   return {
     id: 1,
-    exercise: { id: 1, name: 'Test', type: 'weight_reps', muscles: [] },
+    exercise: {
+      id: 1,
+      name: 'Test',
+      type: ExerciseTrackingType.WEIGHT_REPS,
+      muscles: [],
+    },
     timestamp: new Date('2026-01-01'),
     notes: null,
     restTimeSeconds: null,
     series: [],
     ...overrides,
-  } as Set;
+  };
 }
 
 describe('SetsService', () => {
@@ -118,22 +124,27 @@ describe('SetsService', () => {
     it('should throw NotFoundException when set does not exist', async () => {
       repo.findById.mockResolvedValue(null);
 
-      await expect(
-        service.update(999, { notes: 'Nope' }),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.update(999, { notes: 'Nope' })).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw error when changing exerciseId and series exist', async () => {
       const existing = createSet({
         id: 1,
-        exercise: { id: 1, name: 'Test', type: 'weight_reps', muscles: [] },
+        exercise: {
+          id: 1,
+          name: 'Test',
+          type: ExerciseTrackingType.WEIGHT_REPS,
+          muscles: [],
+        },
         series: [{ id: 1 }] as Set['series'],
       });
       repo.findById.mockResolvedValue(existing);
 
-      await expect(
-        service.update(1, { exerciseId: 2 }),
-      ).rejects.toThrow(BadRequestException);
+      await expect(service.update(1, { exerciseId: 2 })).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 

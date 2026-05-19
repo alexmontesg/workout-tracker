@@ -61,7 +61,11 @@ export class SeriesService {
             'Time-based exercises require durationSeconds',
           );
         }
-        if (dto.weight !== undefined || dto.reps !== undefined || dto.meters !== undefined) {
+        if (
+          dto.weight !== undefined ||
+          dto.reps !== undefined ||
+          dto.meters !== undefined
+        ) {
           throw new BadRequestException(
             'Time-based exercises only accept durationSeconds',
           );
@@ -83,9 +87,7 @@ export class SeriesService {
 
       case ExerciseTrackingType.BODYWEIGHT_REPS:
         if (dto.reps === undefined) {
-          throw new BadRequestException(
-            'Bodyweight exercises require reps',
-          );
+          throw new BadRequestException('Bodyweight exercises require reps');
         }
         if (
           dto.weight !== undefined ||
@@ -100,9 +102,7 @@ export class SeriesService {
 
       case ExerciseTrackingType.DISTANCE:
         if (dto.meters === undefined) {
-          throw new BadRequestException(
-            'Distance exercises require meters',
-          );
+          throw new BadRequestException('Distance exercises require meters');
         }
         if (
           dto.weight !== undefined ||

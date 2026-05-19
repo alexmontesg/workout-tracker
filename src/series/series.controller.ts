@@ -26,18 +26,12 @@ export class SeriesController {
   }
 
   @Post()
-  async create(
-    @Param('setId') setId: number,
-    @Body() dto: CreateSerieDto,
-  ) {
+  async create(@Param('setId') setId: number, @Body() dto: CreateSerieDto) {
     return await this.seriesService.create(setId, dto);
   }
 
   @Patch(':id')
-  async update(
-    @Param('id') id: number,
-    @Body() dto: UpdateSerieDto,
-  ) {
+  async update(@Param('id') id: number, @Body() dto: UpdateSerieDto) {
     return await this.seriesService.update(id, dto);
   }
 

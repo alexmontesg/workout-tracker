@@ -5,7 +5,10 @@ import {
   SERIE_REPOSITORY,
   ISerieRepository,
 } from './domain/serie.repository.interface';
-import { SET_REPOSITORY, ISetRepository } from '../sets/domain/set.repository.interface';
+import {
+  SET_REPOSITORY,
+  ISetRepository,
+} from '../sets/domain/set.repository.interface';
 import { Serie, SerieType } from './serie.entity';
 import { CreateSerieDto } from './dto/create-serie.dto';
 import { UpdateSerieDto } from './dto/update-serie.dto';
@@ -42,7 +45,7 @@ function createSerie(overrides?: Partial<Serie>): Serie {
     durationSeconds: null,
     meters: null,
     ...overrides,
-  } as Serie;
+  };
 }
 
 function createSet(overrides?: Partial<Set>): Set {
@@ -112,10 +115,18 @@ describe('SeriesService', () => {
   describe('create', () => {
     it('should accept durationSeconds for time exercise', async () => {
       const set = createSet({
-        exercise: { id: 1, name: 'Plank', type: ExerciseTrackingType.TIME, muscles: [] },
+        exercise: {
+          id: 1,
+          name: 'Plank',
+          type: ExerciseTrackingType.TIME,
+          muscles: [],
+        },
       });
       setRepo.findById.mockResolvedValue(set);
-      const dto: CreateSerieDto = { type: SerieType.EFFECTIVE, durationSeconds: 60 };
+      const dto: CreateSerieDto = {
+        type: SerieType.EFFECTIVE,
+        durationSeconds: 60,
+      };
       const created = createSerie({ id: 1, durationSeconds: 60 });
       serieRepo.create.mockResolvedValue(created);
 
@@ -126,20 +137,38 @@ describe('SeriesService', () => {
 
     it('should reject non-durationSeconds fields for time exercise', async () => {
       const set = createSet({
-        exercise: { id: 1, name: 'Plank', type: ExerciseTrackingType.TIME, muscles: [] },
+        exercise: {
+          id: 1,
+          name: 'Plank',
+          type: ExerciseTrackingType.TIME,
+          muscles: [],
+        },
       });
       setRepo.findById.mockResolvedValue(set);
-      const dto: CreateSerieDto = { type: SerieType.EFFECTIVE, weight: 80, reps: 10 };
+      const dto: CreateSerieDto = {
+        type: SerieType.EFFECTIVE,
+        weight: 80,
+        reps: 10,
+      };
 
       await expect(service.create(1, dto)).rejects.toThrow(BadRequestException);
     });
 
     it('should accept weight and reps for weight_reps exercise', async () => {
       const set = createSet({
-        exercise: { id: 1, name: 'Bench Press', type: ExerciseTrackingType.WEIGHT_REPS, muscles: [] },
+        exercise: {
+          id: 1,
+          name: 'Bench Press',
+          type: ExerciseTrackingType.WEIGHT_REPS,
+          muscles: [],
+        },
       });
       setRepo.findById.mockResolvedValue(set);
-      const dto: CreateSerieDto = { type: SerieType.EFFECTIVE, weight: 80, reps: 10 };
+      const dto: CreateSerieDto = {
+        type: SerieType.EFFECTIVE,
+        weight: 80,
+        reps: 10,
+      };
       const created = createSerie({ id: 1, weight: 80, reps: 10 });
       serieRepo.create.mockResolvedValue(created);
 
@@ -150,7 +179,12 @@ describe('SeriesService', () => {
 
     it('should reject missing weight for weight_reps exercise', async () => {
       const set = createSet({
-        exercise: { id: 1, name: 'Bench Press', type: ExerciseTrackingType.WEIGHT_REPS, muscles: [] },
+        exercise: {
+          id: 1,
+          name: 'Bench Press',
+          type: ExerciseTrackingType.WEIGHT_REPS,
+          muscles: [],
+        },
       });
       setRepo.findById.mockResolvedValue(set);
       const dto: CreateSerieDto = { type: SerieType.EFFECTIVE, reps: 10 };
@@ -160,7 +194,12 @@ describe('SeriesService', () => {
 
     it('should accept reps only for bodyweight_reps exercise', async () => {
       const set = createSet({
-        exercise: { id: 1, name: 'Push Up', type: ExerciseTrackingType.BODYWEIGHT_REPS, muscles: [] },
+        exercise: {
+          id: 1,
+          name: 'Push Up',
+          type: ExerciseTrackingType.BODYWEIGHT_REPS,
+          muscles: [],
+        },
       });
       setRepo.findById.mockResolvedValue(set);
       const dto: CreateSerieDto = { type: SerieType.EFFECTIVE, reps: 20 };
@@ -174,17 +213,31 @@ describe('SeriesService', () => {
 
     it('should reject extra fields for bodyweight_reps exercise', async () => {
       const set = createSet({
-        exercise: { id: 1, name: 'Push Up', type: ExerciseTrackingType.BODYWEIGHT_REPS, muscles: [] },
+        exercise: {
+          id: 1,
+          name: 'Push Up',
+          type: ExerciseTrackingType.BODYWEIGHT_REPS,
+          muscles: [],
+        },
       });
       setRepo.findById.mockResolvedValue(set);
-      const dto: CreateSerieDto = { type: SerieType.EFFECTIVE, reps: 20, weight: 10 };
+      const dto: CreateSerieDto = {
+        type: SerieType.EFFECTIVE,
+        reps: 20,
+        weight: 10,
+      };
 
       await expect(service.create(1, dto)).rejects.toThrow(BadRequestException);
     });
 
     it('should accept meters for distance exercise', async () => {
       const set = createSet({
-        exercise: { id: 1, name: 'Running', type: ExerciseTrackingType.DISTANCE, muscles: [] },
+        exercise: {
+          id: 1,
+          name: 'Running',
+          type: ExerciseTrackingType.DISTANCE,
+          muscles: [],
+        },
       });
       setRepo.findById.mockResolvedValue(set);
       const dto: CreateSerieDto = { type: SerieType.EFFECTIVE, meters: 1000 };
@@ -198,7 +251,12 @@ describe('SeriesService', () => {
 
     it('should reject non-meters fields for distance exercise', async () => {
       const set = createSet({
-        exercise: { id: 1, name: 'Running', type: ExerciseTrackingType.DISTANCE, muscles: [] },
+        exercise: {
+          id: 1,
+          name: 'Running',
+          type: ExerciseTrackingType.DISTANCE,
+          muscles: [],
+        },
       });
       setRepo.findById.mockResolvedValue(set);
       const dto: CreateSerieDto = { type: SerieType.EFFECTIVE, reps: 5 };
@@ -208,10 +266,19 @@ describe('SeriesService', () => {
 
     it('should accept weight (negative) and reps for assisted exercise', async () => {
       const set = createSet({
-        exercise: { id: 1, name: 'Assisted Pull Up', type: ExerciseTrackingType.ASSISTED, muscles: [] },
+        exercise: {
+          id: 1,
+          name: 'Assisted Pull Up',
+          type: ExerciseTrackingType.ASSISTED,
+          muscles: [],
+        },
       });
       setRepo.findById.mockResolvedValue(set);
-      const dto: CreateSerieDto = { type: SerieType.EFFECTIVE, weight: -20, reps: 10 };
+      const dto: CreateSerieDto = {
+        type: SerieType.EFFECTIVE,
+        weight: -20,
+        reps: 10,
+      };
       const created = createSerie({ id: 1, weight: -20, reps: 10 });
       serieRepo.create.mockResolvedValue(created);
 
@@ -222,7 +289,12 @@ describe('SeriesService', () => {
 
     it('should reject missing weight for assisted exercise', async () => {
       const set = createSet({
-        exercise: { id: 1, name: 'Assisted Pull Up', type: ExerciseTrackingType.ASSISTED, muscles: [] },
+        exercise: {
+          id: 1,
+          name: 'Assisted Pull Up',
+          type: ExerciseTrackingType.ASSISTED,
+          muscles: [],
+        },
       });
       setRepo.findById.mockResolvedValue(set);
       const dto: CreateSerieDto = { type: SerieType.EFFECTIVE, reps: 10 };
