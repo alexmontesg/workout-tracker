@@ -33,14 +33,56 @@ Services SHALL inject repository interfaces, never TypeORM `Repository` objects 
 - **WHEN** inspecting `MusclesService`
 - **THEN** its constructor SHALL accept `IMuscleRepository` (via `@Inject(MUSCLE_REPOSITORY)`), not `Repository<Muscle>` or `Repository<Exercise>`
 
+### Requirement: Repository interface for Set
+A `ISetRepository` interface SHALL be declared in the sets module's domain layer with typed query methods.
+
+#### Scenario: Set repository interface exists
+- **WHEN** inspecting the `sets/domain/` directory
+- **THEN** an `ISetRepository` interface SHALL be declared with methods for `findAll`, `findById`, `create`, `update`, `remove`
+
+### Requirement: Repository interface for Serie
+A `ISerieRepository` interface SHALL be declared in the series module's domain layer with typed query methods.
+
+#### Scenario: Serie repository interface exists
+- **WHEN** inspecting the `series/domain/` directory
+- **THEN** an `ISerieRepository` interface SHALL be declared with methods for `findBySetId`, `findById`, `create`, `update`, `remove`
+
+### Requirement: Repository implementation for Set
+A `TypeOrmSetRepository` SHALL implement `ISetRepository` using TypeORM's `Repository<Set>`.
+
+#### Scenario: Set repository implemented
+- **WHEN** inspecting the `database/repositories/` directory
+- **THEN** a `TypeOrmSetRepository` class SHALL exist that implements `ISetRepository` using TypeORM's `Repository<Set>`
+- **THEN** it SHALL eager-load series and exercise relations
+
+### Requirement: Repository implementation for Serie
+A `TypeOrmSerieRepository` SHALL implement `ISerieRepository` using TypeORM's `Repository<Serie>`.
+
+#### Scenario: Serie repository implemented
+- **WHEN** inspecting the `database/repositories/` directory
+- **THEN** a `TypeOrmSerieRepository` class SHALL exist that implements `ISerieRepository` using TypeORM's `Repository<Serie>`
+
+### Requirement: Services depend on interfaces not ORM
+SetService and SerieService SHALL inject repository interfaces, never TypeORM `Repository` objects directly.
+
+#### Scenario: SetsService uses ISetRepository
+- **WHEN** inspecting `SetsService`
+- **THEN** its constructor SHALL accept `ISetRepository` (via `@Inject(SET_REPOSITORY)`), not `Repository<Set>`
+
+#### Scenario: SeriesService uses ISerieRepository
+- **WHEN** inspecting `SeriesService`
+- **THEN** its constructor SHALL accept `ISerieRepository` (via `@Inject(SERIE_REPOSITORY)`), not `Repository<Serie>`
+
 ### Requirement: Shared database module owns entity registrations
 A `DatabaseModule` SHALL centrally register all TypeORM entities via `TypeOrmModule.forFeature()` and provide all repository implementations.
 
 #### Scenario: DatabaseModule registers all entities
 - **WHEN** inspecting `DatabaseModule`
-- **THEN** it SHALL import `TypeOrmModule.forFeature([Exercise, Muscle])`
+- **THEN** it SHALL import `TypeOrmModule.forFeature([Exercise, Muscle, Set, Serie])`
 - **THEN** it SHALL provide `TypeOrmExerciseRepository` mapped to token `EXERCISE_REPOSITORY`
 - **THEN** it SHALL provide `TypeOrmMuscleRepository` mapped to token `MUSCLE_REPOSITORY`
+- **THEN** it SHALL provide `TypeOrmSetRepository` mapped to token `SET_REPOSITORY`
+- **THEN** it SHALL provide `TypeOrmSerieRepository` mapped to token `SERIE_REPOSITORY`
 
 ### Requirement: No cross-module entity imports in feature modules
 Feature modules SHALL NOT import entity classes from other feature modules. All cross-entity data access SHALL be handled through repository interfaces from the `DatabaseModule`.

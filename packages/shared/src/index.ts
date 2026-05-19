@@ -22,6 +22,29 @@ export type {
   UpdateExerciseInput,
 } from './schemas/exercise';
 
+export {
+  SetSchema,
+  CreateSetSchema,
+  UpdateSetSchema,
+} from './schemas/set';
+export type {
+  Set,
+  CreateSetInput,
+  UpdateSetInput,
+} from './schemas/set';
+
+export {
+  SerieSchema,
+  CreateSerieSchema,
+  UpdateSerieSchema,
+  SerieTypeSchema,
+} from './schemas/serie';
+export type {
+  Serie,
+  CreateSerieInput,
+  UpdateSerieInput,
+} from './schemas/serie';
+
 export { api } from './api/client';
 export {
   listMuscles,
@@ -38,4 +61,19 @@ export {
   updateExercise,
   deleteExercise,
 } from './api/exercises';
+
+export {
+  listSets,
+  getSet,
+  createSet,
+  updateSet,
+  deleteSet,
+} from './api/sets';
+
+export {
+  listSeries,
+  createSerie,
+  updateSerie,
+  deleteSerie,
+} from './api/series';
 export type { ApiResponse } from './api/client';

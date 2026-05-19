@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseModule } from './database/database.module';
 import { ExercisesModule } from './exercises/exercises.module';
 import { MusclesModule } from './muscles/muscles.module';
+import { SetsModule } from './sets/sets.module';
+import { SeriesModule } from './series/series.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { MusclesModule } from './muscles/muscles.module';
     DatabaseModule,
     ExercisesModule,
     MusclesModule,
+    SetsModule,
+    SeriesModule,
   ],
   controllers: [],
   providers: [],
