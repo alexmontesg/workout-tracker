@@ -14,6 +14,7 @@ import { SetsModule } from './sets/sets.module';
     ConfigModule.forRoot({
       validate,
       load: [configuration],
+      isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],

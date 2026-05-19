@@ -34,7 +34,9 @@ function Select({
           className,
         )}
       >
-        <SelectPrimitive.Value data-slot="select-value" placeholder={placeholder} />
+        <SelectPrimitive.Value data-slot="select-value" placeholder={placeholder}>
+          {value ? items.find((i) => i.value === value)?.label : null}
+        </SelectPrimitive.Value>
         <ChevronDownIcon className="size-4 opacity-50" />
       </SelectPrimitive.Trigger>
       <SelectPrimitive.Portal>
