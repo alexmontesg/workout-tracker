@@ -28,3 +28,45 @@ The join table SHALL enforce referential integrity between exercises and muscles
 #### Scenario: Cannot delete muscle linked to exercise
 - **WHEN** a DELETE request is made to `/muscles/:id` where the muscle is linked to one or more exercises
 - **THEN** the request SHALL fail with an error
+
+### Requirement: Get single exercise by ID
+The system SHALL provide an endpoint to retrieve a single exercise by its ID, including linked muscles.
+
+#### Scenario: Get exercise by ID
+- **WHEN** a GET request is made to `/exercises/1`
+- **THEN** the response SHALL contain the exercise object with its linked muscles
+- **THEN** the response status SHALL be 200
+
+#### Scenario: Get exercise returns 404 for non-existent ID
+- **WHEN** a GET request is made to `/exercises/999`
+- **THEN** the response SHALL have status 404
+
+### Requirement: Update an existing exercise
+The system SHALL allow updating an exercise's name, type, and linked muscles.
+
+#### Scenario: Update exercise name, type, and muscles
+- **WHEN** a PATCH request is made to `/exercises/1` with `{ name: "Updated", type: "time", muscleIds: [2, 3] }`
+- **THEN** the exercise SHALL be updated with the new values
+- **THEN** the muscle relationships SHALL be replaced with the specified IDs
+- **THEN** the response SHALL include the updated exercise with linked muscles
+
+#### Scenario: Partial update with single field
+- **WHEN** a PATCH request is made to `/exercises/1` with `{ name: "Renamed" }`
+- **THEN** only the name SHALL be updated
+- **THEN** type and muscles SHALL remain unchanged
+
+#### Scenario: Update returns 404 for non-existent exercise
+- **WHEN** a PATCH request is made to `/exercises/999`
+- **THEN** the response SHALL have status 404
+
+### Requirement: Delete an exercise
+The system SHALL allow deleting an exercise by its ID.
+
+#### Scenario: Delete existing exercise
+- **WHEN** a DELETE request is made to `/exercises/1`
+- **THEN** the exercise SHALL be removed from the database
+- **THEN** the response SHALL have status 200
+
+#### Scenario: Delete returns 404 for non-existent exercise
+- **WHEN** a DELETE request is made to `/exercises/999`
+- **THEN** the response SHALL have status 404

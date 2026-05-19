@@ -9,6 +9,19 @@ export type {
   UpdateMuscleInput,
 } from './schemas/muscle';
 
+export {
+  ExerciseSchema,
+  CreateExerciseSchema,
+  UpdateExerciseSchema,
+  ExerciseTrackingTypeSchema,
+  ExerciseTrackingTypeLabel,
+} from './schemas/exercise';
+export type {
+  Exercise,
+  CreateExerciseInput,
+  UpdateExerciseInput,
+} from './schemas/exercise';
+
 export { api } from './api/client';
 export {
   listMuscles,
@@ -17,4 +30,12 @@ export {
   updateMuscle,
   deleteMuscle,
 } from './api/muscles';
+
+export {
+  listExercises,
+  getExercise,
+  createExercise,
+  updateExercise,
+  deleteExercise,
+} from './api/exercises';
 export type { ApiResponse } from './api/client';
