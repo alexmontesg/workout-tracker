@@ -60,3 +60,8 @@ data/database.sqlite
 
 .opencode/
 openspec/changes/archive/
+
+# workspace build output
+packages/shared/dist/
+apps/web/.next/
+apps/web/node_modules/

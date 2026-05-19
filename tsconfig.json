@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
     "types": ["node", "jest"],
+    "paths": {
+      "@workspace/shared": ["./packages/shared/src"]
+    },
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "resolvePackageJsonExports": true,
@@ -22,5 +25,6 @@
     "noImplicitAny": true,
     "strictBindCallApply": true,
     "noFallthroughCasesInSwitch": true
-  }
+  },
+  "exclude": ["node_modules", "dist", "apps", "packages"]
 }
