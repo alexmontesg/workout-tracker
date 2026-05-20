@@ -19,7 +19,7 @@ export class TypeOrmSetRepository implements ISetRepository {
 
   async findAll(): Promise<Set[]> {
     return await this.repo.find({
-      relations: ['exercise', 'series'],
+      relations: ['workout', 'exercise', 'series'],
       order: { id: 'ASC' },
     });
   }
@@ -27,13 +27,17 @@ export class TypeOrmSetRepository implements ISetRepository {
   async findById(id: number): Promise<Set | null> {
     return await this.repo.findOne({
       where: { id },
-      relations: ['exercise', 'series'],
+      relations: ['workout', 'exercise', 'series'],
     });
   }
 
-  async create(dto: CreateSetDto, entityManager?: EntityManager): Promise<Set> {
+  async create(
+    dto: CreateSetDto & { workoutId: number },
+    entityManager?: EntityManager,
+  ): Promise<Set> {
     const repo = this.getRepo(entityManager);
     const set = repo.create({
+      workout: { id: dto.workoutId },
       exercise: { id: dto.exerciseId },
       timestamp: dto.timestamp,
       notes: dto.notes ?? null,
@@ -41,6 +45,14 @@ export class TypeOrmSetRepository implements ISetRepository {
       series: [],
     });
     return await repo.save(set);
+  }
+
+  async findByWorkoutId(workoutId: number): Promise<Set[]> {
+    return await this.repo.find({
+      where: { workout: { id: workoutId } },
+      relations: ['workout', 'exercise', 'series'],
+      order: { id: 'ASC' },
+    });
   }
 
   async update(

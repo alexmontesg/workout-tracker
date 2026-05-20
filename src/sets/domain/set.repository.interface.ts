@@ -8,7 +8,11 @@ export const SET_REPOSITORY = 'SET_REPOSITORY';
 export interface ISetRepository {
   findAll(): Promise<Set[]>;
   findById(id: number): Promise<Set | null>;
-  create(dto: CreateSetDto, entityManager?: EntityManager): Promise<Set>;
+  findByWorkoutId(workoutId: number): Promise<Set[]>;
+  create(
+    dto: CreateSetDto & { workoutId: number },
+    entityManager?: EntityManager,
+  ): Promise<Set>;
   update(
     set: Set,
     dto: UpdateSetDto,

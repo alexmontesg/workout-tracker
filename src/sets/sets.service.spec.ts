@@ -7,10 +7,25 @@ import {
   ISetRepository,
   SET_REPOSITORY,
 } from './domain/set.repository.interface';
+import {
+  WORKOUT_REPOSITORY,
+  IWorkoutRepository,
+} from '../workouts/domain/workout.repository.interface';
 import { Set } from './set.entity';
 import { SetsService } from './sets.service';
 
 function createMockSetRepository(): jest.Mocked<ISetRepository> {
+  return {
+    findAll: jest.fn(),
+    findById: jest.fn(),
+    findByWorkoutId: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    remove: jest.fn(),
+  };
+}
+
+function createMockWorkoutRepository(): jest.Mocked<IWorkoutRepository> {
   return {
     findAll: jest.fn(),
     findById: jest.fn(),
@@ -23,6 +38,7 @@ function createMockSetRepository(): jest.Mocked<ISetRepository> {
 function createSet(overrides?: Partial<Set>): Set {
   return {
     id: 1,
+    workout: { id: 1 } as Set['workout'],
     exercise: {
       id: 1,
       name: 'Test',
@@ -40,37 +56,42 @@ function createSet(overrides?: Partial<Set>): Set {
 describe('SetsService', () => {
   let service: SetsService;
   let repo: jest.Mocked<ISetRepository>;
+  let workoutRepo: jest.Mocked<IWorkoutRepository>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SetsService,
         { provide: SET_REPOSITORY, useValue: createMockSetRepository() },
+        { provide: WORKOUT_REPOSITORY, useValue: createMockWorkoutRepository() },
       ],
     }).compile();
 
     service = module.get<SetsService>(SetsService);
     repo = module.get<jest.Mocked<ISetRepository>>(SET_REPOSITORY);
+    workoutRepo = module.get<jest.Mocked<IWorkoutRepository>>(
+      WORKOUT_REPOSITORY,
+    );
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('getAll', () => {
-    it('should return all sets', async () => {
+  describe('getByWorkoutId', () => {
+    it('should return all sets for a workout', async () => {
       const sets = [createSet({ id: 1 }), createSet({ id: 2 })];
-      repo.findAll.mockResolvedValue(sets);
+      repo.findByWorkoutId.mockResolvedValue(sets);
 
-      const result = await service.getAll();
+      const result = await service.getByWorkoutId(1);
 
       expect(result).toEqual(sets);
     });
 
-    it('should return an empty array when no sets exist', async () => {
-      repo.findAll.mockResolvedValue([]);
+    it('should return an empty array when no sets in workout', async () => {
+      repo.findByWorkoutId.mockResolvedValue([]);
 
-      const result = await service.getAll();
+      const result = await service.getByWorkoutId(1);
 
       expect(result).toEqual([]);
     });
@@ -94,7 +115,8 @@ describe('SetsService', () => {
   });
 
   describe('create', () => {
-    it('should return the created set', async () => {
+    it('should return the created set when workout exists', async () => {
+      workoutRepo.findById.mockResolvedValue({ id: 1 } as never);
       const dto: CreateSetDto = {
         exerciseId: 1,
         timestamp: new Date('2026-01-01'),
@@ -102,9 +124,20 @@ describe('SetsService', () => {
       const created = createSet({ id: 1 });
       repo.create.mockResolvedValue(created);
 
-      const result = await service.create(dto);
+      const result = await service.create(1, dto);
 
       expect(result).toEqual(created);
+    });
+
+    it('should throw NotFoundException when workout does not exist', async () => {
+      workoutRepo.findById.mockResolvedValue(null);
+
+      await expect(
+        service.create(999, {
+          exerciseId: 1,
+          timestamp: new Date('2026-01-01'),
+        }),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 

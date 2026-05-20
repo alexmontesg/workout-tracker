@@ -8,6 +8,7 @@ import { ExercisesModule } from './exercises/exercises.module';
 import { MusclesModule } from './muscles/muscles.module';
 import { SeriesModule } from './series/series.module';
 import { SetsModule } from './sets/sets.module';
+import { WorkoutsModule } from './workouts/workouts.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { SetsModule } from './sets/sets.module';
     MusclesModule,
     SetsModule,
     SeriesModule,
+    WorkoutsModule,
   ],
   controllers: [],
   providers: [],

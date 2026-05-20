@@ -8,11 +8,16 @@ import {
 } from 'typeorm';
 import { Exercise } from '../exercises/exercise.entity';
 import { Serie } from '../series/serie.entity';
+import { Workout } from '../workouts/workout.entity';
 
 @Entity()
 export class Set {
   @PrimaryGeneratedColumn()
   id!: number;
+
+  @ManyToOne(() => Workout, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'workoutId' })
+  workout!: Workout;
 
   @ManyToOne(() => Exercise)
   @JoinColumn({ name: 'exerciseId' })

@@ -29,6 +29,7 @@ function createMockSetRepository(): jest.Mocked<ISetRepository> {
   return {
     findAll: jest.fn(),
     findById: jest.fn(),
+    findByWorkoutId: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
@@ -51,7 +52,7 @@ function createSerie(overrides?: Partial<Serie>): Serie {
 function createSet(overrides?: Partial<Set>): Set {
   return {
     id: 1,
-    exerciseId: 1,
+    workout: { id: 1 } as Set['workout'],
     exercise: { id: 1, name: 'Test', type: 'weight_reps', muscles: [] },
     timestamp: new Date('2026-01-01'),
     notes: null,

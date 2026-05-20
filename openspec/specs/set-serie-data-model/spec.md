@@ -1,11 +1,12 @@
 ## ADDED Requirements
 
 ### Requirement: Set entity definition
-A Set SHALL be a TypeORM entity mapped to a `set` table with an auto-generated primary key, a foreign key to Exercise, a timestamp, optional free-text notes, and optional rest time in seconds.
+A Set SHALL be a TypeORM entity mapped to a `set` table with an auto-generated primary key, a foreign key to Workout, a foreign key to Exercise, a timestamp, optional free-text notes, and optional rest time in seconds.
 
 #### Scenario: Set entity structure
 - **WHEN** inspecting `Set` entity
-- **THEN** it SHALL have columns: `id` (PK, auto-increment), `exerciseId` (FK → Exercise), `timestamp` (Date), `notes` (string, nullable), `restTimeSeconds` (number, nullable)
+- **THEN** it SHALL have columns: `id` (PK, auto-increment), `workoutId` (FK → Workout), `exerciseId` (FK → Exercise), `timestamp` (Date), `notes` (string, nullable), `restTimeSeconds` (number, nullable)
+- **THEN** it SHALL declare `@ManyToOne(() => Workout, { onDelete: 'CASCADE' })` with `workoutId` foreign key
 - **THEN** it SHALL declare `@ManyToOne(() => Exercise)` with `exerciseId` foreign key
 - **THEN** it SHALL declare `@OneToMany(() => Serie, serie => serie.set)` with cascade delete
 
@@ -53,8 +54,13 @@ Serie tracking columns SHALL map to Exercise tracking types as follows:
 - **THEN** its Serie SHALL use `weight` (negative number representing counterbalance) and `reps`
 
 ### Requirement: Cascade delete Set → Serie
-Removing a Set SHALL cascade-delete all its child Series.
+Removing a Set SHALL cascade-delete all its child Series. Removing a Workout SHALL cascade-delete all its child Sets (and their Series).
 
 #### Scenario: Delete set removes series
-- **WHEN** a DELETE request is made to `/sets/:id`
+- **WHEN** a DELETE request is made to `/workouts/:workoutId/sets/:id`
 - **THEN** all Series belonging to that Set SHALL be deleted from the database
+
+#### Scenario: Delete workout removes sets and series
+- **WHEN** a DELETE request is made to `/workouts/:id`
+- **THEN** all Sets belonging to that Workout SHALL be deleted
+- **THEN** all Series belonging to those Sets SHALL be deleted

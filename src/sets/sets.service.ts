@@ -6,6 +6,8 @@ import {
 import { Inject } from '@nestjs/common';
 import type { ISetRepository } from './domain/set.repository.interface';
 import { SET_REPOSITORY } from './domain/set.repository.interface';
+import type { IWorkoutRepository } from '../workouts/domain/workout.repository.interface';
+import { WORKOUT_REPOSITORY } from '../workouts/domain/workout.repository.interface';
 import { CreateSetDto } from './dto/create-set.dto';
 import { UpdateSetDto } from './dto/update-set.dto';
 
@@ -14,10 +16,12 @@ export class SetsService {
   constructor(
     @Inject(SET_REPOSITORY)
     private readonly setRepository: ISetRepository,
+    @Inject(WORKOUT_REPOSITORY)
+    private readonly workoutRepository: IWorkoutRepository,
   ) {}
 
-  async getAll() {
-    return await this.setRepository.findAll();
+  async getByWorkoutId(workoutId: number) {
+    return await this.setRepository.findByWorkoutId(workoutId);
   }
 
   async getOne(id: number) {
@@ -26,8 +30,10 @@ export class SetsService {
     return set;
   }
 
-  async create(dto: CreateSetDto) {
-    return await this.setRepository.create(dto);
+  async create(workoutId: number, dto: CreateSetDto) {
+    const workout = await this.workoutRepository.findById(workoutId);
+    if (!workout) throw new NotFoundException(`Workout #${workoutId} not found`);
+    return await this.setRepository.create({ ...dto, workoutId });
   }
 
   async update(id: number, dto: UpdateSetDto) {
