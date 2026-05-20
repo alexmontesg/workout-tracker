@@ -2,7 +2,7 @@
 
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { CreateSetSchema, listExercises } from '@workspace/shared';
@@ -23,8 +23,13 @@ function formatDatetimeLocal(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-export function CreateSetForm() {
+interface CreateSetFormProps {
+  workoutId?: number;
+}
+
+export function CreateSetForm({ workoutId }: CreateSetFormProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { data: exercises = [] } = useQuery({
     queryKey: ['exercises'],
@@ -45,7 +50,10 @@ export function CreateSetForm() {
 
   const mutation = useMutation({
     mutationFn: async (data: CreateSetInput) => {
-      const res = await fetch('/api/sets', {
+      const endpoint = workoutId
+        ? `/api/workouts/${workoutId}/sets`
+        : '/api/sets';
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -55,7 +63,12 @@ export function CreateSetForm() {
     },
     onSuccess: (set) => {
       toast.success('Set created');
-      router.push(`/sets/${set.id}`);
+      if (workoutId) {
+        void queryClient.invalidateQueries({ queryKey: ['workouts', workoutId] });
+        router.push(`/workouts/${workoutId}`);
+      } else {
+        router.push(`/sets/${set.id}`);
+      }
     },
     onError: (err) => {
       toast.error(err instanceof Error ? err.message : 'Something went wrong');

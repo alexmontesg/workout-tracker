@@ -1,7 +1,6 @@
 'use client';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getSet, ExerciseTrackingTypeLabel } from '@workspace/shared';
+import { ExerciseTrackingTypeLabel } from '@workspace/shared';
 import type { Exercise, Serie } from '@workspace/shared';
 import { SeriesTable } from './series-table';
 
@@ -18,19 +17,7 @@ interface SetDetailProps {
   set: SetWithRelations;
 }
 
-export function SetDetail({ set: initialSet }: SetDetailProps) {
-  const queryClient = useQueryClient();
-
-  const { data: set } = useQuery({
-    queryKey: ['sets', initialSet.id],
-    queryFn: () => getSet(initialSet.id) as Promise<unknown> as Promise<SetWithRelations>,
-    initialData: initialSet,
-  });
-
-  const invalidateSet = () => {
-    void queryClient.invalidateQueries({ queryKey: ['sets', set.id] });
-  };
-
+export function SetDetail({ set }: SetDetailProps) {
   const date = new Date(set.timestamp);
   const formattedDate = date.toLocaleDateString('en-US', {
     weekday: 'short',
@@ -61,7 +48,7 @@ export function SetDetail({ set: initialSet }: SetDetailProps) {
         setId={set.id}
         exerciseType={set.exercise.type}
         initialSeries={set.series}
-        onSeriesChange={invalidateSet}
+        onSeriesChange={() => {}}
       />
     </div>
   );

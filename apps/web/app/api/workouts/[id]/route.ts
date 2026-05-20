@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const { data, status } = await api(`/sets/${id}`);
+  const { data, status } = await api(`/workouts/${id}`);
   return NextResponse.json(data, { status });
 }
 
@@ -16,20 +16,9 @@ export async function PATCH(
 ) {
   const { id } = await params;
   const body = (await request.json()) as Record<string, unknown>;
-  const { data, status } = await api(`/sets/${id}`, {
+  const { data, status } = await api(`/workouts/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(body),
   });
   return NextResponse.json(data, { status });
-}
-
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  const { id } = await params;
-  const { data, status } = await api(`/sets/${id}`, {
-    method: 'DELETE',
-  });
-  return NextResponse.json(data ?? null, { status });
 }

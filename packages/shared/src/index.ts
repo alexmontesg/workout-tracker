@@ -77,3 +77,22 @@ export {
   deleteSerie,
 } from './api/series';
 export type { ApiResponse } from './api/client';
+
+export {
+  WorkoutSchema,
+  CreateWorkoutSchema,
+  UpdateWorkoutSchema,
+} from './schemas/workout';
+export type {
+  Workout,
+  CreateWorkoutInput,
+  UpdateWorkoutInput,
+} from './schemas/workout';
+
+export {
+  listWorkouts,
+  getWorkout,
+  createWorkout,
+  updateWorkout,
+  finishWorkout,
+} from './api/workouts';
