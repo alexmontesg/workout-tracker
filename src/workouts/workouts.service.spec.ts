@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { WorkoutsService } from './workouts.service';
 import {
   WORKOUT_REPOSITORY,
@@ -163,6 +163,18 @@ describe('WorkoutsService', () => {
       await expect(
         service.update(999, { name: 'Nope' }),
       ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw ForbiddenException when workout is finished', async () => {
+      const finished = createWorkout({
+        id: 1,
+        endDate: new Date('2026-05-20'),
+      });
+      repo.findById.mockResolvedValue(finished);
+
+      await expect(
+        service.update(1, { name: 'Should not work' }),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 

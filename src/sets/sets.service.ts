@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -10,6 +11,7 @@ import type { IWorkoutRepository } from '../workouts/domain/workout.repository.i
 import { WORKOUT_REPOSITORY } from '../workouts/domain/workout.repository.interface';
 import { CreateSetDto } from './dto/create-set.dto';
 import { UpdateSetDto } from './dto/update-set.dto';
+import { assertNotFinished } from '../common/guards/workout-state.guard';
 
 @Injectable()
 export class SetsService {
@@ -33,11 +35,13 @@ export class SetsService {
   async create(workoutId: number, dto: CreateSetDto) {
     const workout = await this.workoutRepository.findById(workoutId);
     if (!workout) throw new NotFoundException(`Workout #${workoutId} not found`);
+    assertNotFinished(workout);
     return await this.setRepository.create({ ...dto, workoutId });
   }
 
   async update(id: number, dto: UpdateSetDto) {
     const set = await this.getOne(id);
+    assertNotFinished(set.workout);
     if (
       dto.exerciseId !== undefined &&
       dto.exerciseId !== set.exercise.id &&
@@ -52,6 +56,7 @@ export class SetsService {
 
   async remove(id: number) {
     const set = await this.getOne(id);
+    assertNotFinished(set.workout);
     return await this.setRepository.remove(set);
   }
 }

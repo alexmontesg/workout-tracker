@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import type { IWorkoutRepository } from './domain/workout.repository.interface';
 import { WORKOUT_REPOSITORY } from './domain/workout.repository.interface';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
 import { UpdateWorkoutDto } from './dto/update-workout.dto';
+import { assertNotFinished } from '../common/guards/workout-state.guard';
 
 @Injectable()
 export class WorkoutsService {
@@ -35,6 +36,7 @@ export class WorkoutsService {
 
   async update(id: number, dto: UpdateWorkoutDto) {
     const workout = await this.getOne(id);
+    assertNotFinished(workout);
     return await this.workoutRepository.update(workout, dto);
   }
 

@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateSetDto } from './dto/create-set.dto';
 import { UpdateSetDto } from './dto/update-set.dto';
@@ -139,6 +139,19 @@ describe('SetsService', () => {
         }),
       ).rejects.toThrow(NotFoundException);
     });
+
+    it('should throw ForbiddenException when workout is finished', async () => {
+      workoutRepo.findById.mockResolvedValue({
+        id: 1,
+        endDate: new Date(),
+      } as never);
+      const dto: CreateSetDto = {
+        exerciseId: 1,
+        timestamp: new Date('2026-01-01'),
+      };
+
+      await expect(service.create(1, dto)).rejects.toThrow(ForbiddenException);
+    });
   });
 
   describe('update', () => {
@@ -160,6 +173,17 @@ describe('SetsService', () => {
       await expect(service.update(999, { notes: 'Nope' })).rejects.toThrow(
         NotFoundException,
       );
+    });
+
+    it('should throw ForbiddenException when parent workout is finished', async () => {
+      const existing = createSet({
+        workout: { id: 1, endDate: new Date() } as Set['workout'],
+      });
+      repo.findById.mockResolvedValue(existing);
+
+      await expect(
+        service.update(1, { notes: 'Should not work' }),
+      ).rejects.toThrow(ForbiddenException);
     });
 
     it('should throw error when changing exerciseId and series exist', async () => {
@@ -196,6 +220,15 @@ describe('SetsService', () => {
       repo.findById.mockResolvedValue(null);
 
       await expect(service.remove(999)).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw ForbiddenException when parent workout is finished', async () => {
+      const set = createSet({
+        workout: { id: 1, endDate: new Date() } as Set['workout'],
+      });
+      repo.findById.mockResolvedValue(set);
+
+      await expect(service.remove(1)).rejects.toThrow(ForbiddenException);
     });
   });
 });

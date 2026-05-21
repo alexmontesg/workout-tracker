@@ -93,3 +93,31 @@ The shared package SHALL contain HTTP client functions for Sets and Series.
 #### Scenario: Serie API client functions exist
 - **WHEN** inspecting `packages/shared/src/api/`
 - **THEN** a `series.ts` file SHALL exist with `listSeries`, `createSerie`, `updateSerie`, `deleteSerie` functions
+
+### Requirement: Series CRUD blocked on finished workouts
+
+The series endpoints SHALL reject create, update, and delete operations when the parent set belongs to a finished workout.
+
+#### Scenario: Create serie on finished workout set returns 403
+- **WHEN** a POST request is made to `/sets/:setId/series` and the set's parent workout has an `endDate`
+- **THEN** the request SHALL fail with a `403 Forbidden` error
+
+#### Scenario: Update serie on finished workout set returns 403
+- **WHEN** a PATCH request is made to `/sets/:setId/series/:serieId` and the set's parent workout has an `endDate`
+- **THEN** the request SHALL fail with a `403 Forbidden` error
+
+#### Scenario: Delete serie on finished workout set returns 403
+- **WHEN** a DELETE request is made to `/sets/:setId/series/:serieId` and the set's parent workout has an `endDate`
+- **THEN** the request SHALL fail with a `403 Forbidden` error
+
+### Requirement: Set CRUD blocked on finished workouts
+
+The set endpoints SHALL reject create, update, and delete operations when the parent workout is finished.
+
+#### Scenario: Update set on finished workout returns 403
+- **WHEN** a PATCH request is made to `/workouts/:workoutId/sets/:id` and the parent workout has an `endDate`
+- **THEN** the request SHALL fail with a `403 Forbidden` error
+
+#### Scenario: Delete set from finished workout returns 403
+- **WHEN** a DELETE request is made to `/workouts/:workoutId/sets/:id` and the parent workout has an `endDate`
+- **THEN** the request SHALL fail with a `403 Forbidden` error

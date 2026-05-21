@@ -54,6 +54,7 @@ interface SerieRowProps {
   exerciseType: ExerciseTrackingType;
   isNew: boolean;
   onSave: () => void;
+  readOnly?: boolean;
 }
 
 export function SerieRow({
@@ -64,6 +65,7 @@ export function SerieRow({
   exerciseType,
   isNew,
   onSave,
+  readOnly = false,
 }: SerieRowProps) {
   const [isEditing, setIsEditing] = useState(isNew);
   const [values, setValues] = useState<Record<string, string>>(
@@ -114,6 +116,9 @@ export function SerieRow({
       }
 
       if (!res.ok) {
+        if (res.status === 403) {
+          throw new Error('Cannot modify a finished workout');
+        }
         const errBody = await res.json().catch(() => ({ message: 'Failed to save' }));
         throw new Error(errBody.message ?? 'Failed to save');
       }
@@ -189,6 +194,9 @@ export function SerieRow({
       const res = await fetch(`/api/sets/${setId}/series/${serie!.id}`, {
         method: 'DELETE',
       });
+      if (res.status === 403) {
+        throw new Error('Cannot modify a finished workout');
+      }
       if (!res.ok) throw new Error('Failed to delete');
       onSave();
     } catch (err) {
@@ -196,7 +204,7 @@ export function SerieRow({
     }
   };
 
-  const showEditing = isEditing || isNew;
+  const showEditing = (isEditing || isNew) && !readOnly;
 
   const renderField = (colId: string) => {
     if (colId === 'type') {
@@ -238,7 +246,7 @@ export function SerieRow({
       <TableCell>
         {isSaving ? (
           <span className="text-xs text-muted-foreground">saving...</span>
-        ) : showEditing && !isNew ? null : !isNew ? (
+        ) : readOnly || showEditing && !isNew ? null : !isNew ? (
           <div className="flex gap-1">
             <Button variant="outline" size="sm" onClick={handleEdit}>
               Edit

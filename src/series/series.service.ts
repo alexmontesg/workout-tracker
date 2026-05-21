@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -11,6 +12,7 @@ import { SET_REPOSITORY } from '../sets/domain/set.repository.interface';
 import { CreateSerieDto } from './dto/create-serie.dto';
 import { UpdateSerieDto } from './dto/update-serie.dto';
 import { ExerciseTrackingType } from '../exercises/exercise.entity';
+import { assertNotFinished } from '../common/guards/workout-state.guard';
 
 @Injectable()
 export class SeriesService {
@@ -35,6 +37,7 @@ export class SeriesService {
     const set = await this.setRepository.findById(setId);
     if (!set) throw new NotFoundException(`Set #${setId} not found`);
 
+    assertNotFinished(set.workout);
     this.validateFields(set.exercise.type, dto);
 
     return await this.serieRepository.create({ ...dto, setId });
@@ -42,11 +45,15 @@ export class SeriesService {
 
   async update(id: number, dto: UpdateSerieDto) {
     const serie = await this.getOne(id);
+    const set = await this.setRepository.findById(serie.set.id);
+    if (set) assertNotFinished(set.workout);
     return await this.serieRepository.update(serie, dto);
   }
 
   async remove(id: number) {
     const serie = await this.getOne(id);
+    const set = await this.setRepository.findById(serie.set.id);
+    if (set) assertNotFinished(set.workout);
     return await this.serieRepository.remove(serie);
   }
 

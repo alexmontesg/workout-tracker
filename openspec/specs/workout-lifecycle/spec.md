@@ -70,3 +70,19 @@ The workout page SHALL visually differentiate between active and finished workou
 - **THEN** the page SHALL display the end date/time
 - **THEN** all controls SHALL be hidden
 - **THEN** the page SHALL indicate it is a completed workout
+
+### Requirement: Backend enforces finished workout immutability
+
+The backend SHALL reject all mutating operations on finished workouts (those with a non-null `endDate`).
+
+#### Scenario: Update finished workout name returns 403
+- **WHEN** a PATCH request is sent to `/workouts/:id` with a new name for a finished workout
+- **THEN** the request SHALL fail with a `403 Forbidden` error
+
+#### Scenario: Add set to finished workout returns 403
+- **WHEN** a POST request is sent to `/workouts/:id/sets` for a finished workout
+- **THEN** the request SHALL fail with a `403 Forbidden` error
+
+#### Scenario: Add series to set in finished workout returns 403
+- **WHEN** a POST request is sent to `/sets/:id/series` where the parent set belongs to a finished workout
+- **THEN** the request SHALL fail with a `403 Forbidden` error

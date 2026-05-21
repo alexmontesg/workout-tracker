@@ -52,6 +52,7 @@ interface SeriesTableProps {
   exerciseType: ExerciseTrackingType;
   initialSeries: Serie[];
   onSeriesChange: () => void;
+  readOnly?: boolean;
 }
 
 export function SeriesTable({
@@ -59,6 +60,7 @@ export function SeriesTable({
   exerciseType,
   initialSeries,
   onSeriesChange,
+  readOnly = false,
 }: SeriesTableProps) {
   const queryClient = useQueryClient();
   const [newRowKey, setNewRowKey] = useState(0);
@@ -70,7 +72,7 @@ export function SeriesTable({
   });
 
   const columns = TRACKING_TYPE_COLUMNS[exerciseType] ?? TRACKING_TYPE_COLUMNS.weight_reps;
-  const hasActions = true;
+  const hasActions = !readOnly;
 
   const handleSave = () => {
     void queryClient.invalidateQueries({ queryKey: ['series', setId] });
@@ -102,18 +104,22 @@ export function SeriesTable({
               exerciseType={exerciseType}
               isNew={false}
               onSave={handleSave}
+              readOnly={readOnly}
             />
           ))}
-          <SerieRow
-            key={`new-${newRowKey}`}
-            setId={setId}
-            serie={null}
-            index={series.length + 1}
-            columns={columns}
-            exerciseType={exerciseType}
-            isNew={true}
-            onSave={handleSave}
-          />
+          {!readOnly && (
+            <SerieRow
+              key={`new-${newRowKey}`}
+              setId={setId}
+              serie={null}
+              index={series.length + 1}
+              columns={columns}
+              exerciseType={exerciseType}
+              isNew={true}
+              onSave={handleSave}
+              readOnly={readOnly}
+            />
+          )}
         </TableBody>
       </Table>
     </div>

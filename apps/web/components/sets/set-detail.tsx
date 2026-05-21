@@ -15,9 +15,10 @@ interface SetWithRelations {
 
 interface SetDetailProps {
   set: SetWithRelations;
+  isFinished?: boolean;
 }
 
-export function SetDetail({ set }: SetDetailProps) {
+export function SetDetail({ set, isFinished = false }: SetDetailProps) {
   const date = new Date(set.timestamp);
   const formattedDate = date.toLocaleDateString('en-US', {
     weekday: 'short',
@@ -49,6 +50,7 @@ export function SetDetail({ set }: SetDetailProps) {
         exerciseType={set.exercise.type}
         initialSeries={set.series}
         onSeriesChange={() => {}}
+        readOnly={isFinished}
       />
     </div>
   );

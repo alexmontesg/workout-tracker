@@ -94,3 +94,23 @@ Serie types SHALL be displayed as colored badges in the series table.
 #### Scenario: Type dropdown defaults to effective
 - **WHEN** a new empty serie row appears
 - **THEN** the type dropdown SHALL default to `effective`
+
+### Requirement: Set detail page renders read-only for finished workouts
+
+The set detail page at `/workouts/[workoutId]/sets/[setId]` SHALL render all content as read-only when the parent workout is finished.
+
+#### Scenario: Series table hides actions for finished workout
+- **WHEN** the set detail page loads and the parent workout has an `endDate`
+- **THEN** the series table SHALL NOT display an empty new row at the bottom
+- **THEN** saved series rows SHALL NOT show Edit or Delete action buttons
+- **THEN** series rows SHALL be displayed as plain text (not editable)
+
+#### Scenario: Set info is read-only for finished workout
+- **WHEN** the set detail page loads and the parent workout has an `endDate`
+- **THEN** the exercise name SHALL be displayed as plain text
+- **THEN** the notes field SHALL be displayed as plain text
+- **THEN** no controls to edit or remove the set SHALL be shown
+
+#### Scenario: 403 error handled gracefully
+- **WHEN** any mutation request returns a 403 error
+- **THEN** a toast notification SHALL inform the user that the workout is finished and cannot be edited

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { SeriesService } from './series.service';
 import {
   SERIE_REPOSITORY,
@@ -302,6 +302,16 @@ describe('SeriesService', () => {
 
       await expect(service.create(1, dto)).rejects.toThrow(BadRequestException);
     });
+
+    it('should throw ForbiddenException when parent workout is finished', async () => {
+      const set = createSet({
+        workout: { id: 1, endDate: new Date() } as Set['workout'],
+      });
+      setRepo.findById.mockResolvedValue(set);
+      const dto: CreateSerieDto = { type: SerieType.EFFECTIVE, reps: 10 };
+
+      await expect(service.create(1, dto)).rejects.toThrow(ForbiddenException);
+    });
   });
 
   describe('update', () => {
@@ -324,6 +334,20 @@ describe('SeriesService', () => {
         NotFoundException,
       );
     });
+
+    it('should throw ForbiddenException when parent workout is finished', async () => {
+      const existing = createSerie({ id: 1 });
+      serieRepo.findById.mockResolvedValue(existing);
+      setRepo.findById.mockResolvedValue(
+        createSet({
+          workout: { id: 1, endDate: new Date() } as Set['workout'],
+        }),
+      );
+
+      await expect(
+        service.update(1, { reps: 10 }),
+      ).rejects.toThrow(ForbiddenException);
+    });
   });
 
   describe('remove', () => {
@@ -341,6 +365,18 @@ describe('SeriesService', () => {
       serieRepo.findById.mockResolvedValue(null);
 
       await expect(service.remove(999)).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw ForbiddenException when parent workout is finished', async () => {
+      const serie = createSerie({ id: 1 });
+      serieRepo.findById.mockResolvedValue(serie);
+      setRepo.findById.mockResolvedValue(
+        createSet({
+          workout: { id: 1, endDate: new Date() } as Set['workout'],
+        }),
+      );
+
+      await expect(service.remove(1)).rejects.toThrow(ForbiddenException);
     });
   });
 });
