@@ -1,29 +1,31 @@
 ## ADDED Requirements
 
-### Requirement: Create-set form at /sets
-The page at `/sets` SHALL display a form to create a new set with exercise selection, timestamp, rest time, and notes.
+### Requirement: Create-set form at /workouts/[id]/sets/new
+The page at `/workouts/[id]/sets/new` SHALL display a form to create a new set within a workout context.
 
-#### Scenario: Display create form
-- **WHEN** a user navigates to `/sets`
+#### Scenario: Display create form with workout context
+- **WHEN** a user navigates to `/workouts/[id]/sets/new`
 - **THEN** a form SHALL be displayed with Exercise select, Timestamp input (defaulting to now), Rest Time input (seconds), and Notes textarea
+- **THEN** a back button SHALL link to `/workouts/[id]`
 
-#### Scenario: Create set redirects to detail page
+#### Scenario: Create set redirects to workout detail
 - **WHEN** the user fills the form and submits
-- **THEN** a POST request SHALL be sent to `/api/sets`
-- **THEN** on success, the user SHALL be redirected to `/sets/[id]` where `[id]` is the created set's ID
+- **THEN** a POST request SHALL be sent to `/api/workouts/[id]/sets` with the form data plus `workoutId`
+- **THEN** on success, the user SHALL be redirected to `/workouts/[id]` (the workout detail page)
 
 #### Scenario: Timestamp defaults to now with backdate option
 - **WHEN** the create set form loads
 - **THEN** the timestamp input SHALL default to the current date and time
 - **THEN** the user SHALL be able to change it to a past date/time
 
-### Requirement: Set detail page at /sets/[id]
-The page at `/sets/[id]` SHALL display set information and an inline series table editor.
+### Requirement: Set detail page at /workouts/[id]/sets/[setId]
+The page at `/workouts/[id]/sets/[setId]` SHALL display set information and an inline series table editor, with navigation back to the parent workout.
 
 #### Scenario: Display set info and series table
-- **WHEN** a user navigates to `/sets/[id]`
+- **WHEN** a user navigates to `/workouts/[id]/sets/[setId]`
 - **THEN** the page SHALL display the exercise name, timestamp, rest time, and notes
 - **THEN** a series table SHALL be displayed below the set info
+- **THEN** a back button SHALL link to `/workouts/[id]`
 
 #### Scenario: Page loads existing series
 - **WHEN** the set detail page loads
